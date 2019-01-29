@@ -1,0 +1,89 @@
+---
+layout:     post
+title:      Day4
+subtitle:   快速搭建个人博客
+date:       2019-1-29
+author:     kkkkkuboy
+header-img: img/post-bg-ios9-web.jpg
+catalog: 	 true
+tags:
+    - github
+---
+
+# Day4
+
+## 搭建个人博客
+
+### 1、快速搭建
+
+1. 注册一个github账号
+
+
+
+2. 挑选Jekyll主题
+
+其实我连Jekyll都不知道，所以Jekyll是什么
+
+> Jekyll 是一个免费的生成静态网页的工具，不需要数据库支持。它有一个模版目录，其中包含原始文本格式的文档，通过 Markdown （或者 Textile） 以及 Liquid 转化成一个完整的可发布的静态网站，可以配合第三方服务例如： Disqus（评论）、多说(评论) 以及分享 等等扩展功能，Jekyll 可以直接部署在 Github（国外） 或 Coding（国内） 上，可以绑定自己的域名。
+
+
+
+3. 拉取博客模板
+
+本来是看到有好多需要安各种东西然后配各种环境，然后我就......但是其实可能那种了解的东西会多一些
+
+选中主题->hometown->Fork
+
+
+
+4. 修改库名
+
+   setting->rename(***.github.io)
+
+   
+
+5. 修改博客配置
+
+   首先得清楚部分文件/目录作用
+
+   > _config.yml：全局配置文件
+   >
+   > _posts：放置博客的文件夹
+   >
+   > img：存放图片的文件夹
+   >
+   > _drafts：是未发布的文章,即草稿这些文件的格式中都没有 `title.MARKUP` 数据
+
+   需要修改_config.yml文件
+
+   修改：所有基础设置
+
+
+
+### 2、绑定域名
+
+1. 购买域名
+
+   我发现取名字真的太难了，sakura真的是巨贵，然后就莫得然后了
+
+2. 解析域名
+
+3. 修改CNAME文件
+
+
+
+### 3、gitalk
+
+我用的这个模板他用了Disqus，但是我把他关了，不知道有什么影响，我先试试
+
+1. 申请一个OAuth application,获得clientID和clientSecret
+
+2. 修改配置文件_config.yml
+
+3. 配置post.html
+
+   一开始不知道还要配这个，并且还找不到这个文件，如果没有配置这个文件，前面的配置就没有用，文件位置在_layouts\post.html
+
+4. 开issues
+
+   
