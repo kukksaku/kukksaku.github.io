@@ -2,7 +2,7 @@
 title: Blog
 SEOTitle: kukksaku的博客 
 header-img: img/2.jpg
-email: qiubaiying@gmail.com
+email: 
 description: "Every failure is leading towards success."
 keyword: "Blog, kukksaku的博客, iOS, Apple, iPhone"
 url: "http://kukksaku.github.io"          # your host, for absolute URL
@@ -18,12 +18,12 @@ sidebar-avatar: /img/3.jpg      # use absolute URL, seeing it's used in both `/`
 
 # SNS settings
 RSS: false
-# weibo_username:     qiubaiying
+# weibo_username:     
 zhihu_username:     
 github_username:    kukksaku
 facebook_username: 
 jianshu_username:   
-#twitter_username:   qiubaiying
+#twitter_username:   
 
 
 
