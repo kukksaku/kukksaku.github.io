@@ -50,11 +50,11 @@ tags:
 
 **ln -s [源文件或目录] [目标文件目录]**
 
-![day6-1](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day6-1.JPG)
+![day6-1](https://github.com/kukksaku/kukksaku.github.io/blob/master/img/day6-1.JPG?raw=true)
 
 使用ls -il检查是否链接成功
 
-![day6-2](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day6-2.JPG)
+![day6-2](https://github.com/kukksaku/kukksaku.github.io/blob/master/img/day6-2.JPG?raw=true)
 
 
 
