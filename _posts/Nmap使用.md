@@ -1,0 +1,447 @@
+# Nmap使用
+
+### 一、Nmap简介
+
+**Nmap**（**网络映射器**）是一款用于[网络发现](https://zh.wikipedia.org/w/index.php?title=%E7%BD%91%E7%BB%9C%E5%8F%91%E7%8E%B0&action=edit&redlink=1)和[安全审计](https://zh.wikipedia.org/w/index.php?title=%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1&action=edit&redlink=1)的[网络安全](https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8)工具，用来扫描网上电脑开放的网络连接端。确定哪些服务运行在哪些连接端，并且推断计算机运行哪个操作系统等，在对目标[服务器](https://www.baidu.com/s?wd=%E6%9C%8D%E5%8A%A1%E5%99%A8&tn=24004469_oem_dg&rsv_dl=gh_pl_sl_csd)进行扫描的时候，能够快速识别潜在的漏洞。
+
+
+
+### 二、基本功能
+
+#### 主机发现
+
+用于发现目标主机是否处于活动状态。
+Nmap 提供了多种检测机制，可以更有效地辨识主机。例如可用来列举目标网络中哪些主机已经开启，类似于Ping命令的功能。
+
+#### 端口扫描
+
+用于扫描主机上的端口状态。
+Nmap可以将端口识别为开放（Open）、关闭（Closed）、过滤（Filtered）、未过滤（Unfiltered）、开放或过滤（Open|Filtered）、关闭或过滤（Closed|Filtered）。默认情况下，Nmap会扫描1660个常用的端口[[1\]](https://zh.wikipedia.org/wiki/Nmap#cite_note-1)，可以覆盖大多数基本应用情况。
+
+#### 版本侦测
+
+用于识别端口上运行的应用程序与程序版本。
+Nmap当前可以识别数千种应用的签名（Signatures）,检测数百种应用协议。而对于不识别的应用，Nmap默认会将应用的指纹(Fingerprint)打印出来，如果用户确知该应用程序，那么用户可以将信息提交到社区，为社区做贡献。
+
+#### 操作系统侦测
+
+用于识别目标主机的操作系统类型、版本编号及设备类型。
+Nmap当前提供1500个操作系统或设备的指纹数据库[[2\]](https://zh.wikipedia.org/wiki/Nmap#cite_note-2)，可以识别通用PC系统、路由器、交换机等设备类型。
+
+#### 防火墙/IDS规避和哄骗
+
+Nmap提供多种机制来规避防火墙、IDS的的屏蔽和检查，便于秘密地探查目标主机的状况。
+基本的规避方式包括：分片、IP诱骗、IP伪装、MAC地址伪装。
+
+#### NSE脚本引擎
+
+NSE是Nmap最强大最灵活的特性之一，可以用于增强主机发现、端口扫描、版本侦测和操作系统侦测等功能，还可以用来扩展高级的功能如**web扫描**、**漏洞发现**和**漏洞利用**等。Nmap使用Lua语言来作为NSE脚本语言，当前的Nmap脚本库已经支持350多个脚本。
+
+> ##### 网络发现
+>
+> 这是NMAP的基本功能，例子包括查找目标域名的whois信息，在查询ARIN，RIPE，或APNIC上查询目标ip的所有权，查找开放端口，SNMP查询和列出可用的NFS/SMB/RPC共享和服务。
+>
+> ##### 漏洞检测
+>
+> 当一个新的漏洞被发现，你想赶在入侵者之前快速扫描网络来识别出有漏洞的系统。虽然NMAP不是一个全面的[漏洞扫描器](https://www.baidu.com/s?wd=%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E5%99%A8&tn=24004469_oem_dg&rsv_dl=gh_pl_sl_csd)，但NSE是强大到足以应付苛刻的漏洞检查。许多漏洞脚本已经可用，并计划编写更多的脚本。
+>
+> ##### 后门检测
+>
+> 很多攻击者和一些自动化蠕虫会留下后门以便后期可再次进入。其中一些可以被NMAP基于正则表达式检测。
+>
+> ##### 漏洞利用
+>
+> 作为一种脚本语言，NSE甚至可以进行漏洞利用，而不仅仅是找到它们。添加自定义攻击脚本的这个功能可能对某些人（特别是渗透测试人员）有价值，但不打算把NMAP开发成metasploit框架那样的东西。
+
+
+
+### 三、基本扫描技术
+
+[root@kali](mailto:root@kali):~# zenmap
+
+调用nmap图形化界面
+
+![day7-9](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-9.JPG)
+
+
+
+  Nmap所识别的6个端口状态：
+
+> **open(开放的)** 
+>
+> 这表明一个应用程序侦听此端口上的连接。
+>
+> 应用程序正在该端口接收TCP 连接或者UDP报文。发现这一点常常是端口扫描 的主要目标。安全意识强的人们知道每个开放的端口 都是攻击的入口。攻击者或者入侵测试者想要发现开放的端口。 而管理员则试图关闭它们或者用防火墙保护它们以免妨碍了合法用户。 非安全扫描可能对开放的端口也感兴趣，因为它们显示了网络上那些服务可供使用。
+>
+> **closed(关闭)** 
+>
+> 这表示收到了探头，但没有应用程序侦听此端口。
+>
+> 关闭的端口对于Nmap也是可访问的(它接受Nmap的探测报文并作出响应)， 但没有应用程序在其上监听。 它们可以显示该IP地址上(主机发现，或者ping扫描)的主机正在运行up 也对部分操作系统探测有所帮助。 因为关闭的端口是可访问的，也许过会儿值得再扫描一下，可能一些又开放了。 系统管理员可能会考虑用防火墙封锁这样的端口。 那样他们就会被显示为被过滤的状态，下面讨论。 
+>
+> **filtered(已过滤)** 
+>
+> 这表明探针没有收到，无法建立连接。它也表明探针被某些筛选给丢弃。
+>
+> 由于包过滤阻止探测报文到达端口， Nmap无法确定该端口是否开放。过滤可能来自专业的防火墙设备，路由器规则 或者主机上的软件防火墙。这样的端口让攻击者感觉很挫折，因为它们几乎不提供 任何信息。有时候它们响应ICMP错误消息如类型3代码13 (无法到达目标: 通信被管理员禁止)，但更普遍的是过滤器只是丢弃探测帧， 不做任何响应。 这迫使Nmap重试若干次以访万一探测包是由于网络阻塞丢弃的。 这使得扫描速度明显变慢。
+>
+> **unfiltered(未过滤)** 
+>
+> 这表明探针接收但无法建立连接。
+>
+> 未被过滤状态意味着端口可访问，但Nmap不能确定它是开放还是关闭。 只有用于映射防火墙规则集的ACK扫描才会把端口分类到这种状态。 用其它类型的扫描如窗口扫描，SYN扫描，或者FIN扫描来扫描未被过滤的端口可以帮助确定 端口是否开放。
+>
+> **open|filtered(开放或者已过滤)** 
+>
+> 这表示该端口进行过滤或打开，但NMAP的无法建立连接。
+>
+> 当无法确定端口是开放还是被过滤的，Namp就把该端口划分成 这种状态。开放的端口不响应就是一个例子。没有响应也可能意味着报文过滤器丢弃 了探测报文或者它引发的任何响应。因此Nmap无法确定该端口是开放的还是被过滤的。 UDP，IP协议， FIN，Null，和Xmas扫描可能把端口归入此类。
+>
+> **closed|filtered(关闭或者已过滤)** 
+>
+> 这表示该端口进行过滤或关闭，但NMAP的无法建立连接。
+>
+> 该状态用于Nmap不能确定端口是关闭的还是被过滤的。 它只可能出现在IPID Idle扫描中。 
+>
+
+
+
+Nmap基本语法：
+
+```
+nmap [ <扫描类型> ...] [ <选项> ] { <扫描目标说明> }
+
+```
+
+#### 1、扫描单个网络
+
+执行NMAP ip或者[www.baidu.com](http://www.baidu.com/)这样的主机名。
+
+![day7-1](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-1.JPG)
+
+![day7-2](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-2.JPG)
+
+![day7-3](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-3.JPG)
+
+Host is up 表示靶机在线
+
+#### 2、扫描多个网络/目标
+
+NMAP将扫描同个网段内不同的ip地址。
+
+![day7-4](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-4.JPG)
+
+你还可以在相同的命令一次扫描多个网站/域名。
+
+#### 3、扫描连续的IP地址
+
+命令：NMAP 192.168.2.1-192.168.2.100
+
+NMAP也可以用使用CIDR（无类别域间路由）表示法整个子网。
+
+命令：NMAP 192.168.2.1/24
+
+#### 4、扫描目标列表
+
+如果你有大量的系统进行扫描，就可以在文本文件中输入IP地址（或主机名），并使用该文件作为输入。
+
+命令：NMAP -iL [LIST.TXT]
+
+#### 5、扫描随机目标
+
+该-IR参数可以用来选择随机Internet主机进行扫描。 NMAP会随机生成目标的指定数量，并试图对其进行扫描。
+
+> 语法：NMAP -ir [主机数]
+>
+> 该-exclude选项与用于从NMAP的扫描中排除主机。
+>
+> 命令：NMAP 192.168.2.1/24 -exclude 192.168.2.10
+
+#### 6、侵入性扫描
+
+最常用的NMAP的选项，试图用一个简单字母A的替代长字符串。它也会执行路由跟踪等。
+
+命令：NMAP -A主机
+
+![day7-5](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-5.JPG)
+
+![day7-6](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-6.JPG)
+
+![day7-7](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-7.JPG)
+
+![day7-8](C:\Users\sakura\Documents\GitHub\kukksaku.github.io\img\day7-8.JPG)
+
+#### 7、不进行Ping
+
+该-PN选项指示NMAP跳过默认的发现检查并对执行对目标的完整端口扫描。当扫描被阻止ping探针的防火墙保护的主机时，这是非常有用的。
+
+语法：NMAP -PN 目标
+
+
+
+#### 8、仅进行Ping扫描
+
+选项-sP让NMAP仅对主机进行ping。当要探测一批ip地址中哪些是可达的时候非常有用。通过指定特定的目标，你可以得到更多的信息，比如MAC地址。
+
+命令： NMAP -sP 目标
+
+
+
+#### 9、更多参数总结
+
+##### **主机发现**
+
+-sL                     仅仅是显示,扫描的IP数目,不会进行任何扫描
+
+-sn                     ping扫描,即主机发现
+
+-Pn                     不检测主机存活
+
+-PS/PA/PU/PY[portlist]  TCP SYN Ping/TCP ACK Ping/UDP Ping发现
+
+-PE/PP/PM               使用ICMP echo, timestamp and netmask 请求包发现主机
+
+-PO[prococol list]      使用IP协议包探测对方主机是否开启
+
+-n/-R                   不对IP进行域名反向解析/为所有的IP都进行域名的反响解析
+
+
+
+##### **扫描技巧**
+
+-sS/sT/sA/sW/sM                 TCP SYN/TCP connect()/ACK/TCP窗口扫描/TCP Maimon扫描
+
+-sU                             UDP扫描
+
+-sN/sF/sX                       TCP Null，FIN，and Xmas扫描
+
+--scanflags                     自定义TCP包中的flags
+
+-sI zombie host[:probeport]     Idlescan
+
+-sY/sZ                          SCTP INIT/COOKIE-ECHO 扫描
+
+-sO                             使用IP protocol 扫描确定目标机支持的协议类型
+
+-b “FTP relay host”             使用FTP bounce scan
+
+**指定端口和扫描顺序**
+
+-p                      特定的端口 -p80,443 或者 -p1-65535
+
+-p U:PORT               扫描udp的某个端口, -p U:53
+
+-F                      快速扫描模式,比默认的扫描端口还少
+
+-r                      不随机扫描端口,默认是随机扫描的
+
+--top-ports "number"    扫描开放概率最高的number个端口,出现的概率需要参考nmap-services文件,ubuntu中该文件位于/usr/share/nmap.nmap默认扫前1000个
+
+--port-ratio "ratio"    扫描指定频率以上的端口
+
+
+
+##### **服务版本识别**
+
+-sV                             开放版本探测,可以直接使用-A同时打开操作系统探测和版本探测
+
+--version-intensity "level"     设置版本扫描强度,强度水平说明了应该使用哪些探测报文。数值越高，服务越有可能被正确识别。默认是7
+
+--version-light                 打开轻量级模式,为--version-intensity 2的别名
+
+--version-all                   尝试所有探测,为--version-intensity 9的别名
+
+--version-trace                 显示出详细的版本侦测过程信息
+
+
+
+##### **脚本扫描**
+
+-sC　　根据端口识别的服务,调用默认脚本
+
+--script=”Lua scripts”　　调用的脚本名
+
+--script-args=n1=v1,[n2=v2]　　调用的脚本传递的参数
+
+--script-args-file=filename　　使用文本传递参数
+
+--script-trace　　显示所有发送和接收到的数据
+
+--script-updatedb　　更新脚本的数据库
+
+--script-help=”Lua script”　　显示指定脚本的帮助
+
+
+
+##### **OS识别**
+
+-O              启用操作系统检测,-A来同时启用操作系统检测和版本检测
+
+--osscan-limit 　　 针对指定的目标进行操作系统检测(至少需确知该主机分别有一个open和closed的端口)
+
+--osscan-guess  　　推测操作系统检测结果,当Nmap无法确定所检测的操作系统时，会尽可能地提供最相近的匹配，Nmap默认进行这种匹配
+
+
+
+##### **防火墙/IDS躲避和哄骗**
+
+-f; --mtu value                 指定使用分片、指定数据包的MTU.
+
+-D decoy1,decoy2,ME             使用诱饵隐蔽扫描
+
+-S IP-ADDRESS                   源地址欺骗
+
+-e interface                    使用指定的接口
+
+-g/ --source-port PROTNUM       使用指定源端口
+
+--proxies url1,[url2],...       使用HTTP或者SOCKS4的代理
+
+--data-length NUM               填充随机数据让数据包长度达到NUM
+
+--ip-options OPTIONS            使用指定的IP选项来发送数据包
+
+--ttl VALUE                     设置IP time-to-live域
+
+--spoof-mac ADDR/PREFIX/VEBDOR  MAC地址伪装
+
+--badsum                        使用错误的checksum来发送数据包
+
+
+
+##### **Nmap 输出**
+
+-oN                     将标准输出直接写入指定的文件
+
+-oX                     输出xml文件
+
+-oS                     将所有的输出都改为大写
+
+-oG                     输出便于通过bash或者perl处理的格式,非xml
+
+-oA BASENAME            可将扫描结果以标准格式、XML格式和Grep格式一次性输出
+
+-v                      提高输出信息的详细度
+
+-d level                设置debug级别,最高是9
+
+--reason                显示端口处于带确认状态的原因
+
+--open                  只输出端口状态为open的端口
+
+--packet-trace          显示所有发送或者接收到的数据包
+
+--iflist                显示路由信息和接口,便于调试
+
+--log-errors            把日志等级为errors/warings的日志输出
+
+--append-output         追加到指定的文件
+
+--resume FILENAME       恢复已停止的扫描
+
+--stylesheet PATH/URL   设置XSL样式表，转换XML输出
+
+--webxml                从namp.org得到XML的样式
+
+--no-sytlesheet         忽略XML声明的XSL样式表
+
+
+
+##### **时间性能优化**
+
+-T 　　时间优化(0-5)(paranoid|sneaky|polite|normal|aggressive|insane)
+
+-F　　快速扫描。
+
+--max-retries　　调整重传次数。
+
+--min-hostgroup/--max-hostgroup size 　　设置组的大小
+
+--min-parallelism/--max-parellelism time　　指定时间内的探针数
+
+--min-rtt-timrout/--max-rtt-timrout/initial-rtt-timrouttime 　　指定探针超时
+
+--scan-delay/-max-scan-delay time 　　指定探针之间的时延
+
+--max-retries tries　　指定探针重传转发数
+
+--host-timeout time　　设置扫描主机的最大时间
+
+--defeat-rst-ratelimit　　设置rst的限制
+
+
+
+##### **其他nmap选项**
+
+-6                      开启IPv6
+
+-A                      OS识别,版本探测,脚本扫描和traceroute
+
+--datedir DIRNAME       说明用户Nmap数据文件位置
+
+--send-eth / --send-ip  使用原以太网帧发送/在原IP层发送
+
+--privileged            假定用户具有全部权限
+
+--unprovoleged          假定用户不具有全部权限,创建原始套接字需要root权限
+
+-V                      打印版本信息
+
+-h                      输出帮助
+
+
+
+转载于：https://www.jianshu.com/p/d96b79792b11
+
+
+
+### 四、实用参数
+
+**1、 获取远程主机开放的端口、端口的服务、服务的版本、操作系统类型及其版本**
+
+nmap -sV -T4 -O --open ip
+
+
+
+**2、 快速获取开放特定端口的主机**
+
+nmap -T4 -F  ip
+
+nmap -T4 -F --open ip
+
+
+
+**3、 简单的万能扫描**
+
+nmap -T5 -A ip
+
+
+
+**4 、确认主机是否有拒绝服务的问题**
+
+nmap -T5  --max-parallelism 600 --script http-slowloris ip
+
+
+
+**5、 绕过ACL的简单实例**
+
+nmap -sX -p- -Pn ip   #主要针对UNIX，LINUX系统
+
+
+
+**6、 简单检测是否有漏洞问题**
+
+nmap -T5 -O -A -v --script vuln ip
+
+
+
+**7 、简单的暴力破解测试**
+
+nmap --script=brute ip
+
+
+
+
+
+
+
