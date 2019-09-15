@@ -7,7 +7,7 @@ author:     kkkkkuboy
 header-img: img/post-bg-ios9-web.jpg
 catalog: 	 true
 tags:
-    - github
+    -python
 ---
 
 # Python+Django -web初步实践（一）
